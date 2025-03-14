@@ -1,0 +1,668 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.6.3">
+  <hashTree>
+    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Test Plan">
+      <elementProp name="TestPlan.user_defined_variables" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables">
+        <collectionProp name="Arguments.arguments">
+          <elementProp name="baseUrl" elementType="Argument">
+            <stringProp name="Argument.name">baseUrl</stringProp>
+            <stringProp name="Argument.value">fake-json-api.mock.beeceptor.com</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+        </collectionProp>
+      </elementProp>
+      <boolProp name="TestPlan.functional_mode">false</boolProp>
+      <boolProp name="TestPlan.serialize_threadgroups">false</boolProp>
+    </TestPlan>
+    <hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="GET Requests">
+        <intProp name="ThreadGroup.num_threads">1</intProp>
+        <intProp name="ThreadGroup.ramp_time">1</intProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller">
+          <stringProp name="LoopController.loops">1</stringProp>
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+        </elementProp>
+      </ThreadGroup>
+      <hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="/users/{user_id}">
+          <stringProp name="HTTPSampler.domain">${baseUrl}</stringProp>
+          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.path">/users/${__Random(1,1000)}</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <stringProp name="HTTPSampler.method">GET</stringProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.postBodyRaw">false</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value"></stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+                <boolProp name="HTTPArgument.use_equals">true</boolProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Rsponse is JSON">
+            <collectionProp name="Asserion.test_strings">
+              <stringProp name="-43840953">application/json</stringProp>
+            </collectionProp>
+            <stringProp name="Assertion.custom_message"></stringProp>
+            <stringProp name="Assertion.test_field">Assertion.response_headers</stringProp>
+            <boolProp name="Assertion.assume_success">false</boolProp>
+            <intProp name="Assertion.test_type">2</intProp>
+          </ResponseAssertion>
+          <hashTree/>
+          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Code is 200">
+            <collectionProp name="Asserion.test_strings">
+              <stringProp name="49586">200</stringProp>
+            </collectionProp>
+            <stringProp name="Assertion.custom_message"></stringProp>
+            <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+            <boolProp name="Assertion.assume_success">false</boolProp>
+            <intProp name="Assertion.test_type">1</intProp>
+          </ResponseAssertion>
+          <hashTree/>
+          <DurationAssertion guiclass="DurationAssertionGui" testclass="DurationAssertion" testname="Duration Assertion">
+            <stringProp name="DurationAssertion.duration">1000</stringProp>
+          </DurationAssertion>
+          <hashTree/>
+          <JSR223Assertion guiclass="TestBeanGUI" testclass="JSR223Assertion" testname="JSR223 Assertion">
+            <stringProp name="scriptLanguage">groovy</stringProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="cacheKey">true</stringProp>
+            <stringProp name="script">import groovy.json.JsonSlurper
+
+def responseData = prev.getResponseDataAsString()
+
+// Validate that the repsonse properties exist and are the correct data type
+try {
+	def response = new JsonSlurper().parseText(responseData)
+
+    	assert response.id instanceof Number : &apos;Expected &quot;id&quot; to be a number&apos;
+    	assert response.name instanceof String : &apos;Expected &quot;name&quot; to be a string&apos;
+    	assert response.company instanceof String : &apos;Expected &quot;company&quot; to be a string&apos;
+    	assert response.username instanceof String : &apos;Expected &quot;username&quot; to be a string&apos;
+    	assert response.email instanceof String : &apos;Expected &quot;email&quot; to be a string&apos;
+    	assert response.address instanceof String : &apos;Expected &quot;address&quot; to be a string&apos;
+    	assert response.zip instanceof String : &apos;Expected &quot;zip&quot; to be a string&apos;
+    	assert response.state instanceof String : &apos;Expected &quot;state&quot; to be a string&apos;
+    	assert response.country instanceof String : &apos;Expected &quot;country&quot; to be a string&apos;
+    	assert response.phone instanceof String : &apos;Expected &quot;phone&quot; to be a string&apos;
+    	assert response.photo instanceof String : &apos;Expected &quot;photo&quot; to be a string&apos;
+
+} catch (Exception e) {
+	log.error(&quot;Error: ${e.message}&quot;)
+	throw e
+}
+</stringProp>
+          </JSR223Assertion>
+          <hashTree/>
+        </hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="/users">
+          <stringProp name="HTTPSampler.domain">${baseUrl}</stringProp>
+          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.path">/users</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <stringProp name="HTTPSampler.method">GET</stringProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.postBodyRaw">false</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables">
+            <collectionProp name="Arguments.arguments"/>
+          </elementProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Code is 200" enabled="true">
+            <collectionProp name="Asserion.test_strings">
+              <stringProp name="49586">200</stringProp>
+            </collectionProp>
+            <stringProp name="Assertion.custom_message"></stringProp>
+            <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+            <boolProp name="Assertion.assume_success">false</boolProp>
+            <intProp name="Assertion.test_type">1</intProp>
+          </ResponseAssertion>
+          <hashTree/>
+          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Rsponse is JSON" enabled="true">
+            <collectionProp name="Asserion.test_strings">
+              <stringProp name="-43840953">application/json</stringProp>
+            </collectionProp>
+            <stringProp name="Assertion.custom_message"></stringProp>
+            <stringProp name="Assertion.test_field">Assertion.response_headers</stringProp>
+            <boolProp name="Assertion.assume_success">false</boolProp>
+            <intProp name="Assertion.test_type">2</intProp>
+          </ResponseAssertion>
+          <hashTree/>
+          <DurationAssertion guiclass="DurationAssertionGui" testclass="DurationAssertion" testname="Duration Assertion" enabled="true">
+            <stringProp name="DurationAssertion.duration">500</stringProp>
+          </DurationAssertion>
+          <hashTree/>
+          <JSR223Assertion guiclass="TestBeanGUI" testclass="JSR223Assertion" testname="JSR223 Assertion">
+            <stringProp name="cacheKey">true</stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="script">import groovy.json.JsonSlurper
+
+def responseBody = new JsonSlurper().parseText(prev.getResponseDataAsString())
+
+// Check that the response is an array
+if (!(responseBody instanceof List)) {
+    throw new AssertionError(&apos;Response is not an array&apos;)
+}
+
+boolean verification = false
+String message = &quot;&quot;
+
+// Loop through the repsonse properties and validate that each is the correct data type
+responseBody.eachWithIndex { obj, i -&gt;
+    try {
+        if (!(obj.id instanceof Number)) throw new AssertionError(&apos;Expected &quot;id&quot; to be a number&apos;)
+        if (!(obj.name instanceof String)) throw new AssertionError(&apos;Expected &quot;name&quot; to be a string&apos;)
+        if (!(obj.company instanceof String)) throw new AssertionError(&apos;Expected &quot;company&quot; to be a string&apos;)
+        if (!(obj.username instanceof String)) throw new AssertionError(&apos;Expected &quot;username&quot; to be a string&apos;)
+        if (!(obj.email instanceof String)) throw new AssertionError(&apos;Expected &quot;email&quot; to be a string&apos;)
+        if (!(obj.address instanceof String)) throw new AssertionError(&apos;Expected &quot;address&quot; to be a string&apos;)
+        if (!(obj.zip instanceof String)) throw new AssertionError(&apos;Expected &quot;zip&quot; to be a string&apos;)
+        if (!(obj.state instanceof String)) throw new AssertionError(&apos;Expected &quot;state&quot; to be a string&apos;)
+        if (!(obj.country instanceof String)) throw new AssertionError(&apos;Expected &quot;country&quot; to be a string&apos;)
+        if (!(obj.phone instanceof String)) throw new AssertionError(&apos;Expected &quot;phone&quot; to be a string&apos;)
+        if (!(obj.photo instanceof String)) throw new AssertionError(&apos;Expected &quot;photo&quot; to be a string&apos;)
+    } catch (AssertionError e) {
+        verification = true
+        message += &quot;${e.message}\n&quot;
+    }
+}
+
+if (verification) {
+    AssertionResult.setFailure(true)
+    AssertionResult.setError(true)
+    AssertionResult.setFailureMessage(message)
+    log.info(&quot;Test failed: &quot; + message)
+} else {
+    AssertionResult.setFailure(false)
+    AssertionResult.setError(false)
+    log.info(&quot;Test passed successfully&quot;)
+}
+</stringProp>
+            <stringProp name="scriptLanguage">groovy</stringProp>
+          </JSR223Assertion>
+          <hashTree/>
+        </hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="/companies/{company_id}">
+          <stringProp name="HTTPSampler.domain">${baseUrl}</stringProp>
+          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.path">/companies/${__Random(1,1000)}</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <stringProp name="HTTPSampler.method">GET</stringProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.postBodyRaw">false</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables">
+            <collectionProp name="Arguments.arguments"/>
+          </elementProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Rsponse is JSON" enabled="true">
+            <collectionProp name="Asserion.test_strings">
+              <stringProp name="-43840953">application/json</stringProp>
+            </collectionProp>
+            <stringProp name="Assertion.custom_message"></stringProp>
+            <stringProp name="Assertion.test_field">Assertion.response_headers</stringProp>
+            <boolProp name="Assertion.assume_success">false</boolProp>
+            <intProp name="Assertion.test_type">2</intProp>
+          </ResponseAssertion>
+          <hashTree/>
+          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Code is 200" enabled="true">
+            <collectionProp name="Asserion.test_strings">
+              <stringProp name="49586">200</stringProp>
+            </collectionProp>
+            <stringProp name="Assertion.custom_message"></stringProp>
+            <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+            <boolProp name="Assertion.assume_success">false</boolProp>
+            <intProp name="Assertion.test_type">1</intProp>
+          </ResponseAssertion>
+          <hashTree/>
+          <DurationAssertion guiclass="DurationAssertionGui" testclass="DurationAssertion" testname="Duration Assertion" enabled="true">
+            <stringProp name="DurationAssertion.duration">500</stringProp>
+          </DurationAssertion>
+          <hashTree/>
+          <JSR223Assertion guiclass="TestBeanGUI" testclass="JSR223Assertion" testname="JSR223 Assertion">
+            <stringProp name="scriptLanguage">groovy</stringProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="cacheKey">true</stringProp>
+            <stringProp name="script">import groovy.json.JsonSlurper
+
+def responseData = prev.getResponseDataAsString()
+
+// Validate that the repsonse properties exist and are the correct data type
+try {
+	def response = new JsonSlurper().parseText(responseData)
+
+    	assert response.id instanceof Number : &apos;Expected &quot;id&quot; to be a number&apos;
+    	assert response.name instanceof String : &apos;Expected &quot;name&quot; to be a string&apos;
+    	assert response.address instanceof String : &apos;Expected &quot;address&quot; to be a string&apos;
+    	assert response.zip instanceof String : &apos;Expected &quot;zip&quot; to be a string&apos;
+    	assert response.country instanceof String : &apos;Expected &quot;country&quot; to be a string&apos;
+    	assert response.employeeCount instanceof Number : &apos;Expected &quot;number&quot; to be a string&apos;
+	assert response.industry instanceof String : &apos;Expected &quot;industry&quot; to be a string&apos;
+	assert response.marketCap instanceof Number : &apos;Expected &quot;marketCap&quot; to be a string&apos;
+    	assert response.domain instanceof String : &apos;Expected &quot;domain&quot; to be a string&apos;
+    	assert response.logo instanceof String : &apos;Expected &quot;logo&quot; to be a string&apos;
+    	assert response.ceoName instanceof String : &apos;Expected &quot;ceoName&quot; to be a string&apos;
+
+} catch (Exception e) {
+	log.error(&quot;Error: ${e.message}&quot;)
+	throw e
+}
+</stringProp>
+          </JSR223Assertion>
+          <hashTree/>
+        </hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="/companies">
+          <stringProp name="HTTPSampler.domain">${baseUrl}</stringProp>
+          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.path">/companies</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <stringProp name="HTTPSampler.method">GET</stringProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.postBodyRaw">false</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables">
+            <collectionProp name="Arguments.arguments"/>
+          </elementProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Rsponse is JSON" enabled="true">
+            <collectionProp name="Asserion.test_strings">
+              <stringProp name="-43840953">application/json</stringProp>
+            </collectionProp>
+            <stringProp name="Assertion.custom_message"></stringProp>
+            <stringProp name="Assertion.test_field">Assertion.response_headers</stringProp>
+            <boolProp name="Assertion.assume_success">false</boolProp>
+            <intProp name="Assertion.test_type">2</intProp>
+          </ResponseAssertion>
+          <hashTree/>
+          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Code is 200" enabled="true">
+            <collectionProp name="Asserion.test_strings">
+              <stringProp name="49586">200</stringProp>
+            </collectionProp>
+            <stringProp name="Assertion.custom_message"></stringProp>
+            <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+            <boolProp name="Assertion.assume_success">false</boolProp>
+            <intProp name="Assertion.test_type">1</intProp>
+          </ResponseAssertion>
+          <hashTree/>
+          <DurationAssertion guiclass="DurationAssertionGui" testclass="DurationAssertion" testname="Duration Assertion" enabled="true">
+            <stringProp name="DurationAssertion.duration">500</stringProp>
+          </DurationAssertion>
+          <hashTree/>
+          <JSR223Assertion guiclass="TestBeanGUI" testclass="JSR223Assertion" testname="JSR223 Assertion">
+            <stringProp name="cacheKey">true</stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="script">import groovy.json.JsonSlurper
+
+def responseBody = new JsonSlurper().parseText(prev.getResponseDataAsString())
+
+// Check that the response is an array
+if (!(responseBody instanceof List)) {
+    throw new AssertionError(&apos;Response is not an array&apos;)
+}
+
+boolean verification = false
+String message = &quot;&quot;
+
+// Loop through the repsonse properties and validate that each is the correct data type
+responseBody.eachWithIndex { obj, i -&gt;
+    try {
+        if (!(obj.id instanceof Number)) throw new AssertionError(&apos;Expected &quot;id&quot; to be a number&apos;)
+        if (!(obj.name instanceof String)) throw new AssertionError(&apos;Expected &quot;name&quot; to be a string&apos;)
+        if (!(obj.address instanceof String)) throw new AssertionError(&apos;Expected &quot;address&quot; to be a string&apos;)
+        if (!(obj.zip instanceof String)) throw new AssertionError(&apos;Expected &quot;zip&quot; to be a string&apos;)
+        if (!(obj.country instanceof String)) throw new AssertionError(&apos;Expected &quot;country&quot; to be a string&apos;)
+        if (!(obj.employeeCount instanceof Number)) throw new AssertionError(&apos;Expected &quot;employeeCount&quot; to be a string&apos;)
+        if (!(obj.industry instanceof String)) throw new AssertionError(&apos;Expected &quot;industry&quot; to be a string&apos;)
+        if (!(obj.marketCap instanceof Number)) throw new AssertionError(&apos;Expected &quot;marketCap&quot; to be a string&apos;)
+        if (!(obj.domain instanceof String)) throw new AssertionError(&apos;Expected &quot;domain&quot; to be a string&apos;)
+        if (!(obj.logo instanceof String)) throw new AssertionError(&apos;Expected &quot;logo&quot; to be a string&apos;)
+        if (!(obj.ceoName instanceof String)) throw new AssertionError(&apos;Expected &quot;ceoName&quot; to be a string&apos;)
+    } catch (AssertionError e) {
+        verification = true
+        message += &quot;${e.message}\n&quot;
+    }
+}
+
+if (verification) {
+    AssertionResult.setFailure(true)
+    AssertionResult.setError(true)
+    AssertionResult.setFailureMessage(message)
+    log.info(&quot;Test failed: &quot; + message)
+} else {
+    AssertionResult.setFailure(false)
+    AssertionResult.setError(false)
+    log.info(&quot;Test passed successfully&quot;)
+}
+</stringProp>
+            <stringProp name="scriptLanguage">groovy</stringProp>
+          </JSR223Assertion>
+          <hashTree/>
+        </hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="/customers">
+          <stringProp name="HTTPSampler.domain">${baseUrl}</stringProp>
+          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.path">/customers</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <stringProp name="HTTPSampler.method">GET</stringProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.postBodyRaw">false</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables">
+            <collectionProp name="Arguments.arguments"/>
+          </elementProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Rsponse is JSON" enabled="true">
+            <collectionProp name="Asserion.test_strings">
+              <stringProp name="-43840953">application/json</stringProp>
+            </collectionProp>
+            <stringProp name="Assertion.custom_message"></stringProp>
+            <stringProp name="Assertion.test_field">Assertion.response_headers</stringProp>
+            <boolProp name="Assertion.assume_success">false</boolProp>
+            <intProp name="Assertion.test_type">2</intProp>
+          </ResponseAssertion>
+          <hashTree/>
+          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Code is 200" enabled="true">
+            <collectionProp name="Asserion.test_strings">
+              <stringProp name="49586">200</stringProp>
+            </collectionProp>
+            <stringProp name="Assertion.custom_message"></stringProp>
+            <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+            <boolProp name="Assertion.assume_success">false</boolProp>
+            <intProp name="Assertion.test_type">1</intProp>
+          </ResponseAssertion>
+          <hashTree/>
+          <DurationAssertion guiclass="DurationAssertionGui" testclass="DurationAssertion" testname="Duration Assertion" enabled="true">
+            <stringProp name="DurationAssertion.duration">500</stringProp>
+          </DurationAssertion>
+          <hashTree/>
+          <JSR223Assertion guiclass="TestBeanGUI" testclass="JSR223Assertion" testname="JSR223 Assertion">
+            <stringProp name="cacheKey">true</stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="script">import groovy.json.JsonSlurper
+
+def responseBody = new JsonSlurper().parseText(prev.getResponseDataAsString())
+
+// Check that the response is an array
+if (!(responseBody instanceof List)) {
+    throw new AssertionError(&apos;Response is not an array&apos;)
+}
+
+boolean verification = false
+String message = &quot;&quot;
+
+// Loop through the repsonse properties and validate that each is the correct data type
+responseBody.eachWithIndex { obj, i -&gt;
+    try {
+        if (!(obj.id instanceof Number)) throw new AssertionError(&apos;Expected &quot;id&quot; to be a number&apos;)
+        if (!(obj.username instanceof String)) throw new AssertionError(&apos;Expected &quot;username&quot; to be a string&apos;)
+        if (!(obj.password instanceof String)) throw new AssertionError(&apos;Expected &quot;password&quot; to be a string&apos;)
+        if (!(obj.name instanceof String)) throw new AssertionError(&apos;Expected &quot;name&quot; to be a string&apos;)
+        if (!(obj.email instanceof String)) throw new AssertionError(&apos;Expected &quot;email&quot; to be a string&apos;)
+        if (!(obj.phone instanceof String)) throw new AssertionError(&apos;Expected &quot;phone&quot; to be a string&apos;)
+        if (!(obj.address instanceof Object)) throw new AssertionError(&apos;Expected &quot;address&quot; to be an object&apos;)
+        if (!(obj.address.street instanceof String)) throw new AssertionError(&apos;Expected &quot;street&quot; to be a string&apos;)
+        if (!(obj.address.city instanceof String)) throw new AssertionError(&apos;Expected &quot;city&quot; to be a string&apos;)
+        if (!(obj.address.country instanceof String)) throw new AssertionError(&apos;Expected &quot;country&quot; to be a string&apos;)
+        if (!(obj.address.zipcode instanceof String)) throw new AssertionError(&apos;Expected &quot;zipcode&quot; to be a string&apos;)
+        if (!(obj.created_at instanceof String)) throw new AssertionError(&apos;Expected &quot;created_at&quot; to be a string&apos;)
+    } catch (AssertionError e) {
+        verification = true
+        message += &quot;${e.message}\n&quot;
+    }
+}
+
+if (verification) {
+    AssertionResult.setFailure(true)
+    AssertionResult.setError(true)
+    AssertionResult.setFailureMessage(message)
+    log.info(&quot;Test failed: &quot; + message)
+} else {
+    AssertionResult.setFailure(false)
+    AssertionResult.setError(false)
+    log.info(&quot;Test passed successfully&quot;)
+}
+</stringProp>
+            <stringProp name="scriptLanguage">groovy</stringProp>
+          </JSR223Assertion>
+          <hashTree/>
+        </hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="/notifications">
+          <stringProp name="HTTPSampler.domain">${baseUrl}</stringProp>
+          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.path">/notifications</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <stringProp name="HTTPSampler.method">GET</stringProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.postBodyRaw">false</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables">
+            <collectionProp name="Arguments.arguments"/>
+          </elementProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Rsponse is JSON" enabled="true">
+            <collectionProp name="Asserion.test_strings">
+              <stringProp name="-43840953">application/json</stringProp>
+            </collectionProp>
+            <stringProp name="Assertion.custom_message"></stringProp>
+            <stringProp name="Assertion.test_field">Assertion.response_headers</stringProp>
+            <boolProp name="Assertion.assume_success">false</boolProp>
+            <intProp name="Assertion.test_type">2</intProp>
+          </ResponseAssertion>
+          <hashTree/>
+          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Code is 200" enabled="true">
+            <collectionProp name="Asserion.test_strings">
+              <stringProp name="49586">200</stringProp>
+            </collectionProp>
+            <stringProp name="Assertion.custom_message"></stringProp>
+            <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+            <boolProp name="Assertion.assume_success">false</boolProp>
+            <intProp name="Assertion.test_type">1</intProp>
+          </ResponseAssertion>
+          <hashTree/>
+          <DurationAssertion guiclass="DurationAssertionGui" testclass="DurationAssertion" testname="Duration Assertion" enabled="true">
+            <stringProp name="DurationAssertion.duration">500</stringProp>
+          </DurationAssertion>
+          <hashTree/>
+          <JSR223Assertion guiclass="TestBeanGUI" testclass="JSR223Assertion" testname="JSR223 Assertion">
+            <stringProp name="cacheKey">true</stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="script">import groovy.json.JsonSlurper
+
+def responseBody = new JsonSlurper().parseText(prev.getResponseDataAsString())
+
+// Check that the response is an array
+if (!(responseBody instanceof List)) {
+    throw new AssertionError(&apos;Response is not an array&apos;)
+}
+
+boolean verification = false
+String message = &quot;&quot;
+
+// Loop through the repsonse properties and validate that each is the correct data type
+responseBody.eachWithIndex { obj, i -&gt;
+    try {
+        if (!(obj.id instanceof Number)) throw new AssertionError(&apos;Expected &quot;id&quot; to be a number&apos;)
+        if (!(obj.title instanceof String)) throw new AssertionError(&apos;Expected &quot;title&quot; to be a string&apos;)
+        if (!(obj.message instanceof String)) throw new AssertionError(&apos;Expected &quot;message&quot; to be a string&apos;)
+        if (!(obj.timestamp instanceof String)) throw new AssertionError(&apos;Expected &quot;timestamp&quot; to be a string&apos;)
+        if (!(obj.type instanceof String)) throw new AssertionError(&apos;Expected &quot;type&quot; to be a string&apos;)
+        if (!(obj.read instanceof Boolean)) throw new AssertionError(&apos;Expected &quot;read&quot; to be a boolean&apos;)
+    } catch (AssertionError e) {
+        verification = true
+        message += &quot;${e.message}\n&quot;
+    }
+}
+
+if (verification) {
+    AssertionResult.setFailure(true)
+    AssertionResult.setError(true)
+    AssertionResult.setFailureMessage(message)
+    log.info(&quot;Test failed: &quot; + message)
+} else {
+    AssertionResult.setFailure(false)
+    AssertionResult.setError(false)
+    log.info(&quot;Test passed successfully&quot;)
+}
+</stringProp>
+            <stringProp name="scriptLanguage">groovy</stringProp>
+          </JSR223Assertion>
+          <hashTree/>
+        </hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="/">
+          <stringProp name="HTTPSampler.domain">${baseUrl}</stringProp>
+          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.path">/</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <stringProp name="HTTPSampler.method">GET</stringProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.postBodyRaw">false</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables">
+            <collectionProp name="Arguments.arguments"/>
+          </elementProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Rsponse is JSON" enabled="true">
+            <collectionProp name="Asserion.test_strings">
+              <stringProp name="-43840953">application/json</stringProp>
+            </collectionProp>
+            <stringProp name="Assertion.custom_message"></stringProp>
+            <stringProp name="Assertion.test_field">Assertion.response_headers</stringProp>
+            <boolProp name="Assertion.assume_success">false</boolProp>
+            <intProp name="Assertion.test_type">2</intProp>
+          </ResponseAssertion>
+          <hashTree/>
+          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Code is 200" enabled="true">
+            <collectionProp name="Asserion.test_strings">
+              <stringProp name="49586">200</stringProp>
+            </collectionProp>
+            <stringProp name="Assertion.custom_message"></stringProp>
+            <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+            <boolProp name="Assertion.assume_success">false</boolProp>
+            <intProp name="Assertion.test_type">1</intProp>
+          </ResponseAssertion>
+          <hashTree/>
+          <DurationAssertion guiclass="DurationAssertionGui" testclass="DurationAssertion" testname="Duration Assertion" enabled="true">
+            <stringProp name="DurationAssertion.duration">500</stringProp>
+          </DurationAssertion>
+          <hashTree/>
+          <JSR223Assertion guiclass="TestBeanGUI" testclass="JSR223Assertion" testname="JSR223 Assertion">
+            <stringProp name="scriptLanguage">groovy</stringProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="cacheKey">true</stringProp>
+            <stringProp name="script">import groovy.json.JsonSlurper
+
+def responseData = prev.getResponseDataAsString()
+
+// Validate that the repsonse properties exist and are the correct data type
+try {
+    def response = new JsonSlurper().parseText(responseData)
+
+    if (!(response.status instanceof String)) throw new AssertionError(&apos;Expected &quot;status&quot; to be a string&apos;)
+    if (!(response.paths instanceof List)) throw new AssertionError(&apos;Expected &quot;paths&quot; to be an array&apos;)
+
+    // Validate each property inside 
+    (0..4).each { index -&gt;
+        if (!(response.paths[index] instanceof String)) {
+            throw new AssertionError(&quot;Expected \&quot;paths.$index\&quot; to be a string&quot;)
+        }
+    }
+} catch (AssertionError e) {
+    verification = true
+    log.info(&quot;Test failed: &quot; + e.message)
+}
+</stringProp>
+          </JSR223Assertion>
+          <hashTree/>
+        </hashTree>
+        <ResultCollector guiclass="SummaryReport" testclass="ResultCollector" testname="Summary Report">
+          <boolProp name="ResultCollector.error_logging">false</boolProp>
+          <objProp>
+            <name>saveConfig</name>
+            <value class="SampleSaveConfiguration">
+              <time>true</time>
+              <latency>true</latency>
+              <timestamp>true</timestamp>
+              <success>true</success>
+              <label>true</label>
+              <code>true</code>
+              <message>true</message>
+              <threadName>true</threadName>
+              <dataType>true</dataType>
+              <encoding>false</encoding>
+              <assertions>true</assertions>
+              <subresults>true</subresults>
+              <responseData>false</responseData>
+              <samplerData>false</samplerData>
+              <xml>false</xml>
+              <fieldNames>true</fieldNames>
+              <responseHeaders>false</responseHeaders>
+              <requestHeaders>false</requestHeaders>
+              <responseDataOnError>false</responseDataOnError>
+              <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+              <assertionsResultsToSave>0</assertionsResultsToSave>
+              <bytes>true</bytes>
+              <sentBytes>true</sentBytes>
+              <url>true</url>
+              <threadCounts>true</threadCounts>
+              <idleTime>true</idleTime>
+              <connectTime>true</connectTime>
+            </value>
+          </objProp>
+          <stringProp name="filename">/home/josip/Projects/automation-task/API-Tests/reports/report</stringProp>
+        </ResultCollector>
+        <hashTree/>
+      </hashTree>
+      <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree">
+        <boolProp name="ResultCollector.error_logging">false</boolProp>
+        <objProp>
+          <name>saveConfig</name>
+          <value class="SampleSaveConfiguration">
+            <time>true</time>
+            <latency>true</latency>
+            <timestamp>true</timestamp>
+            <success>true</success>
+            <label>true</label>
+            <code>true</code>
+            <message>true</message>
+            <threadName>true</threadName>
+            <dataType>true</dataType>
+            <encoding>false</encoding>
+            <assertions>true</assertions>
+            <subresults>true</subresults>
+            <responseData>false</responseData>
+            <samplerData>false</samplerData>
+            <xml>false</xml>
+            <fieldNames>true</fieldNames>
+            <responseHeaders>false</responseHeaders>
+            <requestHeaders>false</requestHeaders>
+            <responseDataOnError>false</responseDataOnError>
+            <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+            <assertionsResultsToSave>0</assertionsResultsToSave>
+            <bytes>true</bytes>
+            <sentBytes>true</sentBytes>
+            <url>true</url>
+            <threadCounts>true</threadCounts>
+            <idleTime>true</idleTime>
+            <connectTime>true</connectTime>
+          </value>
+        </objProp>
+        <stringProp name="filename"></stringProp>
+      </ResultCollector>
+      <hashTree/>
+    </hashTree>
+  </hashTree>
+</jmeterTestPlan>
